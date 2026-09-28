@@ -84,7 +84,7 @@ img { max-width: 100%; }
 .envelope-seal span { color: #f5dcae; font: italic 14px 'Playfair Display', serif; }
 .envelope-hint { margin: 27px 0 0; color: #fffaf0; text-shadow: 0 2px 12px rgba(0,0,0,.65); transition: opacity .3s ease, transform .3s ease; }
 .entry[data-stage="envelope"] .entry-copy { opacity: 0; transform: translateY(-18px); pointer-events: none; }
-.entry[data-stage="envelope"] .envelope-stage { opacity: 1; visibility: visible; transform: translate(-50%, -42%) scale(1); }
+.entry[data-stage="envelope"] .envelope-stage { opacity: 1; visibility: visible; transform: translate(-50%, -14%) scale(1); }
 .entry.is-opening .envelope-flap { transform: rotateX(180deg); }
 .entry.is-opening .envelope-letter.is-rising { z-index: 6; transform: translate(-50%, -88%) rotate(-1.5deg) scale(1.025); box-shadow: 0 18px 34px rgba(0,0,0,.35); }
 .entry.is-opening .envelope-seal { opacity: 0; transform: translate(-50%, -50%) scale(.72) rotate(-18deg); }
