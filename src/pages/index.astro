@@ -15,7 +15,7 @@ const receptionMap = 'https://www.google.com/maps/dir/?api=1&destination=23.1239
     <title>Rijin &amp; Twinkle | Wedding Invitation</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,500&display=swap" rel="stylesheet" />
   </head>
   <body>
     <audio id="wedding-music" preload="none" loop>
@@ -23,14 +23,18 @@ const receptionMap = 'https://www.google.com/maps/dir/?api=1&destination=23.1239
     </audio>
 
     <div class="entry" id="entry" data-stage="intro">
-      <img class="entry-image" src="/images/couple-real.webp" alt="" fetchpriority="high" />
+      <img class="entry-image" src="/images/couple-illustration.jpeg" alt="Rijin and Twinkle together" fetchpriority="high" />
       <div class="entry-shade"></div>
+      <div class="monogram-loader" id="monogram-loader" aria-label="Loading invitation">
+        <span>R</span><i>&amp;</i><span>T</span>
+      </div>
       <div class="entry-copy">
         <p class="entry-kicker">An invitation from</p>
         <p class="entry-names">Rijin <span>&amp;</span> Twinkle</p>
+        <p class="entry-storyline">Our story, our forever</p>
         <button class="entry-action" id="begin-invitation" type="button">
           <span class="entry-play" aria-hidden="true">▶</span>
-          <span class="entry-action-label">Tap to play</span>
+          <span class="entry-action-label">Tap to open</span>
         </button>
       </div>
       <div class="envelope-stage" aria-hidden="true">
@@ -54,7 +58,7 @@ const receptionMap = 'https://www.google.com/maps/dir/?api=1&destination=23.1239
       <section class="welcome" id="home" aria-labelledby="hero-title">
         <div class="welcome-inner">
           <p class="eyebrow">Together with our families</p>
-          <h1 id="hero-title">Rijin <span>&amp;</span> Twinkle</h1>
+          <h1 id="hero-title" tabindex="-1">Rijin <span>&amp;</span> Twinkle</h1>
           <p class="welcome-line">request the pleasure of your company</p>
           <figure class="card-art">
             <img src="/images/wedding-card-art.webp" alt="Illustrated wedding invitation artwork featuring Rijin and Twinkle" fetchpriority="high" />
@@ -67,7 +71,7 @@ const receptionMap = 'https://www.google.com/maps/dir/?api=1&destination=23.1239
         <p class="eyebrow">Counting down to</p>
         <p class="countdown-date">12 November <span>2026</span></p>
         <h2 id="countdown-title">Our wedding day</h2>
-        <div class="countdown-clock" aria-label="Countdown to the wedding">
+        <div class="countdown-clock is-loading" aria-label="Countdown to the wedding" aria-busy="true">
           <div><strong id="days">--</strong><span>Days</span></div>
           <div><strong id="hours">--</strong><span>Hours</span></div>
           <div><strong id="minutes">--</strong><span>Minutes</span></div>
@@ -87,7 +91,7 @@ const receptionMap = 'https://www.google.com/maps/dir/?api=1&destination=23.1239
             <dl class="event-details">
               <div><dt>Date</dt><dd>Thursday, 12 November 2026</dd></div>
               <div><dt>Time</dt><dd>3:30 PM</dd></div>
-              <div><dt>Place</dt><dd>St. Andrew’s Mar Thoma Church<br />Ridge Road, Jabalpur</dd></div>
+              <div><dt>Place</dt><dd>St. Andrew’s Mar Thoma Syrian Church<br />Ridge Road, Jabalpur</dd></div>
             </dl>
             <a class="map-link" href={churchMap} target="_blank" rel="noreferrer">View on map <span aria-hidden="true">↗</span></a>
           </div>
@@ -110,13 +114,15 @@ const receptionMap = 'https://www.google.com/maps/dir/?api=1&destination=23.1239
       </section>
 
       <section class="closing" aria-label="A note from the couple">
-        <p class="eyebrow">With love and joy, we invite you</p>
+        <p class="eyebrow">With love and joy, we invite you for our wedding</p>
         <p class="closing-names">Rijin <span>&amp;</span> Twinkle</p>
         <p class="closing-date">12 NOVEMBER 2026 <span>·</span> JABALPUR</p>
         <p class="closing-note">We can’t wait to celebrate with you.</p>
         <a class="back-to-top" href="#home">Back to the beginning ↑</a>
       </section>
     </main>
+
+    <span class="custom-cursor" aria-hidden="true"></span>
 
     <script>
       const musicButton = document.querySelector<HTMLButtonElement>('.music-toggle');
@@ -129,6 +135,32 @@ const receptionMap = 'https://www.google.com/maps/dir/?api=1&destination=23.1239
       const openButton = document.querySelector<HTMLButtonElement>('#open-invitation');
       const invitation = document.querySelector<HTMLElement>('#invitation');
       const entryActionLabel = document.querySelector<HTMLSpanElement>('.entry-action-label');
+      const entryImage = document.querySelector<HTMLImageElement>('.entry-image');
+      const countdownClock = document.querySelector<HTMLElement>('.countdown-clock');
+      const cursor = document.querySelector<HTMLElement>('.custom-cursor');
+      let fadeFrame = 0;
+
+      const fadeInMusic = async () => {
+        if (!music) return false;
+        window.cancelAnimationFrame(fadeFrame);
+        music.volume = 0;
+        try {
+          await music.play();
+          const fadeStarted = performance.now();
+          const animateVolume = (now: number) => {
+            if (!music || music.paused) return;
+            const progress = Math.min((now - fadeStarted) / 4000, 1);
+            music.volume = progress;
+            if (progress < 1) fadeFrame = window.requestAnimationFrame(animateVolume);
+          };
+          fadeFrame = window.requestAnimationFrame(animateVolume);
+          syncMusicControl(true);
+          return true;
+        } catch {
+          syncMusicControl(false);
+          return false;
+        }
+      };
 
       const syncMusicControl = (isPlaying: boolean) => {
         musicButton?.setAttribute('aria-pressed', String(isPlaying));
@@ -136,35 +168,35 @@ const receptionMap = 'https://www.google.com/maps/dir/?api=1&destination=23.1239
         if (musicLabel) musicLabel.textContent = isPlaying ? 'Pause music' : 'Play music';
       };
 
-      if (music) {
-        void music.play().then(() => syncMusicControl(true)).catch(() => syncMusicControl(false));
-      }
+      if (music) music.volume = 0;
+
+      const revealIntro = () => entry?.classList.remove('is-loading');
+      if (entryImage?.complete && entryImage.naturalWidth > 0) revealIntro();
+      else entryImage?.addEventListener('load', revealIntro, { once: true });
+      entryImage?.addEventListener('error', revealIntro, { once: true });
 
       const openEnvelope = () => {
         if (!entry || !invitation) return;
         if (entry.classList.contains('is-opening')) return;
         entry.classList.add('is-opening');
-        invitation.removeAttribute('inert');
-        invitation.setAttribute('aria-hidden', 'false');
-        window.setTimeout(() => invitationLetter?.classList.add('is-rising'), 180);
-        window.setTimeout(() => entry.classList.add('is-fading'), 1250);
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!reducedMotion) {
+          window.setTimeout(() => invitationLetter?.classList.add('is-rising'), 180);
+          window.setTimeout(() => entry.classList.add('is-fading'), 1650);
+        }
         window.setTimeout(() => {
           entry.hidden = true;
           document.body.classList.remove('entry-active');
-          window.scrollTo({ top: 0, behavior: 'instant' });
-        }, 1980);
+          invitation.removeAttribute('inert');
+          invitation.setAttribute('aria-hidden', 'false');
+          window.scrollTo(0, 0);
+          document.querySelector<HTMLElement>('#hero-title')?.focus({ preventScroll: true });
+        }, reducedMotion ? 0 : 2450);
       };
 
       beginButton?.addEventListener('click', async () => {
         if (!entry) return;
-        if (music?.paused) {
-          try {
-            await music.play();
-            syncMusicControl(true);
-          } catch {
-            syncMusicControl(false);
-          }
-        }
+        if (music?.paused) await fadeInMusic();
         entry.dataset.stage = 'envelope';
         beginButton?.setAttribute('tabindex', '-1');
         envelopeStage?.removeAttribute('aria-hidden');
@@ -189,21 +221,63 @@ const receptionMap = 'https://www.google.com/maps/dir/?api=1&destination=23.1239
           const element = document.querySelector<HTMLElement>(`#${unit}`);
           if (element) element.textContent = String(value).padStart(2, '0');
         }
+        countdownClock?.classList.remove('is-loading');
+        countdownClock?.setAttribute('aria-busy', 'false');
       };
       updateCountdown();
       window.setInterval(updateCountdown, 1000);
 
+      const revealTargets = document.querySelectorAll<HTMLElement>('.welcome-inner, .countdown > *, .event-photo, .event-copy, .closing > *');
+      if ('IntersectionObserver' in window) {
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+          for (const observed of entries) {
+            if (!observed.isIntersecting) continue;
+            observed.target.classList.add('is-visible');
+            observer.unobserve(observed.target);
+          }
+        }, { threshold: 0.14 });
+        revealTargets.forEach((target) => {
+          target.classList.add('reveal-on-scroll');
+          revealObserver.observe(target);
+        });
+      }
+
+      let scrollFrame = 0;
+      const updateParallax = () => {
+        if (scrollFrame) return;
+        scrollFrame = window.requestAnimationFrame(() => {
+          scrollFrame = 0;
+          for (const photo of document.querySelectorAll<HTMLElement>('.event-photo')) {
+            const bounds = photo.getBoundingClientRect();
+            const offset = (bounds.top + bounds.height / 2 - window.innerHeight / 2) * -0.035;
+            photo.style.setProperty('--parallax-y', `${offset}px`);
+          }
+        });
+      };
+      window.addEventListener('scroll', updateParallax, { passive: true });
+      updateParallax();
+
+      if (cursor && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        document.body.classList.add('custom-cursor-active');
+        window.addEventListener('pointermove', (event) => {
+          cursor.style.setProperty('--cursor-x', `${event.clientX}px`);
+          cursor.style.setProperty('--cursor-y', `${event.clientY}px`);
+        }, { passive: true });
+        document.querySelectorAll<HTMLElement>('a, button').forEach((control) => {
+          control.addEventListener('pointerenter', () => cursor.classList.add('is-hovering'));
+          control.addEventListener('pointerleave', () => cursor.classList.remove('is-hovering'));
+        });
+      }
+
       musicButton?.addEventListener('click', async () => {
         if (!music || !musicButton || !musicLabel) return;
         if (music.paused) {
-          try {
-            await music.play();
-            syncMusicControl(true);
-          } catch {
-            musicLabel.textContent = 'Music unavailable';
-          }
+          const started = await fadeInMusic();
+          if (!started) musicLabel.textContent = 'Music unavailable';
         } else {
+          window.cancelAnimationFrame(fadeFrame);
           music.pause();
+          music.volume = 0;
           syncMusicControl(false);
         }
       });
